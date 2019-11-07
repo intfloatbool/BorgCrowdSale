@@ -1,3 +1,5 @@
+DOCS_SOURCE: https://github.com/OpenZeppelin/openzeppelin-contracts-docs/blob/master/demo-docs/learn-about-crowdsales.md
+
 Crowdsale ICO :
 CrowdSale - продажа коинов толпе
 
@@ -52,8 +54,10 @@ CrowdSale - продажа коинов толпе
 
 Одно из ваших первых решений должно быть - 'как я получу эти токены для пользователей?', обычно это делается тремя способами:
 
-- (по умолчанию) - Crowdsale контракт владеет токенами и просто отправляет токены из собственного владения к пользователям, которые их покупают.
-- MintedCrowdsale - Crowdsale создает токены при совершении покупки.
+- (по умолчанию) - Crowdsale контракт владеет токенами и просто отправляет токены из собственного владения к пользователям, которые их покупают. Токены имеют фиксированное количество.
+
+- MintedCrowdsale - Crowdsale создает токены при совершении покупки, поэтому их можно покупать *сколько угодно*.
+
 - AllowanceCrowdsale - Crowdsale гарантирует доступ к другому кошельку (например Multisig) которые будут продаваться в Crowdsale.
 
 
@@ -111,6 +115,91 @@ CrowdSale - продажа коинов толпе
 		}
 	}	
 }
+
+*** Allowance Crowdsale ***
+Используйте AllowanceCrowdsale для отправки токенов из другого кошелька участникам crowdsale. Чтобы обеспечить его работу, исходник должен давать crowdsale доступ через ERC20 approve(...) метод.
+
+{
+	contract MyCrowdsale is AllowanceCrowdsale, Crowdsale {
+		constructor(
+			uint256 rate,
+			address wallet,
+			ERC20 token,
+			address tokenWallet // <- новый аргумент
+		)
+		AllowanceCrowdsale(tokenWallet)
+		Crowdsale(rate, wallet, token)
+		public {
+		
+		}
+	}
+}
+
+После того как crowdsale создался, не забудьте одобрить это для использования токенов!
+IRC20(tokenAddress).approve(CROWDSALE_ADDRESS, SOME_TOKEN_AMOUNT)
+
+*** Валидация ***
+
+Есть несколько различных способов для валиадации, которые могут быть частью вашего crowdsale:
+	-CappedCrowdsale - добавляет ограничения к crowdsale, анулирование любых покупок, которые превышают ограничения.
+	-IndividuallyCappedCrowdsale -ограничения на индивидуальных участников
+	-WhitelistedCrowdsale - только разрешенные участники (из белого списка) могут покупать токены. Это полезно при проверке участников через KYC/AML и добавление их в список!
+	-TimedCrowdsale - добавлят openingTime и closingTime к crowdsale.
+	
+	
+*** Распределение ***
+
+В жизни каждого crowdsale наступает момент когда он должен отказаться от токенов, времся решить когда это произойдет!
+
+СТандарное поведение это выпускать токены по мере их покупки участниками, но иногда это может быть нежелательно. Например, что если мы хотим вернуть пользователям деньги, если мы не достигнем минимума продажи? Или может быть мы хотим подождать прежде чем пользователи могут получить токены и торговать ими?
+
+PostDeliveryCrowdsale- подразумивает распространения токенов после того как crowdsale завершился, позволяя пользователям вызывать withdrawTokens() чтобы получить токены, которые они купили.
+
+{
+	contract MyCrowdsale is PostDeliveryCrowdsale, TimedCrowdsale, Crowdsale {
+		constructor(
+			uint256 rate,
+			address wallet,
+			ERC20 token,
+			uint256 openingTime,
+			uint256 closingTime
+		)
+		PostDeliveryCrowdsale()
+		TimedCrowdsale(startTime, closingTime)
+		Crowdsale(rate, wallet, token)
+		public {
+			//этот crowdsale будет держать все токены пока crowdsale не 			закончится, после окончания пользователи могут забрать токены 			методом 'withdrawTokens()'!
+		}
+	}
+}
+
+RefundableCrowdsale - предлагает вернуть пользователям средства если минимальная цель не была достигнута. Если  цель не достигнута , пользователи могут claimRefund() для получения Ether обратно.
+	
+{
+	contract MyCrowdsale is RefundableCrowdsale, Crowdsale {
+		constructor(
+			uint256 rate,
+			address wallet,
+			ERC20 token,
+			uint256 goal // <- Минимальная цель в wei
+		)
+		RefundableCrowdsale(goal)
+		Crowdsale(rate, wallet, token)
+		public 
+		{
+		
+		}
+	} 
+}
+
+
+
+	
+	
+	
+	
+
+
 
 
 
