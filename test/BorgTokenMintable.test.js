@@ -1,5 +1,5 @@
-const BorgToken = artifacts.require("BorgToken");
-contract('BorgToken', accounts => {
+const BorgToken = artifacts.require("BorgTokenMintable");
+contract('BorgTokenMintable', accounts => {
     const _name = "Borg";
     const _symbol = "BRG";
     const _decimals = 18;
