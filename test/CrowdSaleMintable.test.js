@@ -114,8 +114,15 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
     });
   });
 
-  describe('tokens sale tests', function() {
+  describe("Signers checking", function() {
+    it('Boris should be a signer', async function() {
+      const borizAddress = this.moneyOwners.BORIZ.acc;
+      const isSigner = await this.walletSplitter.isSigner(borizAddress);
+      assert.equal(isSigner, true);
+    });
+  });
 
+  describe('tokens sale tests, and wallets owners tests', function() {
     //helper func
     function calculateDoleByOwner(owner) {
       return owner.shares / 100;
