@@ -40,8 +40,21 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
     
     //Initialize wallet splitter to split payments between owners
     this.walletOwners = [
-
+      this.moneyOwners.BORIZ.acc,
+      this.moneyOwners.MICHA.acc,
+      this.moneyOwners.VOVA.acc
     ];
+
+    this.ownersShares = [
+      this.moneyOwners.BORIZ.shares,
+      this.moneyOwners.MICHA.shares,
+      this.moneyOwners.VOVA.shares
+    ]
+
+    this.walletSplitter = await WalletSplitter.new(
+      this.walletOwners,
+      this.ownersShares
+    );
 
     // Crowdsale config
     this.rate = 1;
@@ -66,6 +79,23 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
     
     //ADD crowdsale contract as minter to Token!:
     await this.token.addMinter(this.crowdsale.address);
+  });
+
+  describe('Money splitter check values', function() {
+
+    it('Should have correct payeer value for BORIZ', async function() {
+      const borizAddress = await this.walletSplitter.payee(0);
+      assert.equal(borizAddress, this.moneyOwners.BORIZ.acc);
+    });
+    it('Should have correct payeer value for MICHA', async function() {
+      const borizAddress = await this.walletSplitter.payee(1);
+      assert.equal(borizAddress, this.moneyOwners.MICHA.acc);
+    });
+    it('Should have correct payeer value for B0BA', async function() {
+      const borizAddress = await this.walletSplitter.payee(2);
+      assert.equal(borizAddress, this.moneyOwners.VOVA.acc);
+    });
+
   });
 
   describe('crowdsale properties', function() {
