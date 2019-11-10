@@ -115,13 +115,30 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
   });
 
   describe('tokens sale tests', function() {
+    const countOfBuy = 10;
     it('balance of investor should be updated ', async function() {
-      const countOfBuy = 2;
       const weiToBuy = web3.utils.toWei(countOfBuy.toString());
 
       await this.crowdsale.buyTokens(investor1, {value: weiToBuy});
       const balanceAfter = await this.token.balanceOf(investor1);
       assert.equal(weiToBuy, balanceAfter);
     });
+
+    it(`Boriz should get hes dole`, async function() {
+      const borizAddress = this.moneyOwners.BORIZ.acc;
+      const dolePercent = this.moneyOwners.BORIZ.shares / 100;
+      let goal = countOfBuy * dolePercent;
+      const borizBalanceBeforeInWei = await web3.eth.getBalance(borizAddress);
+      const borizBalanceBeforeEth = Number(web3.utils.fromWei(borizBalanceBeforeInWei, 'ether'));
+
+      //get dole
+      await this.walletSplitter.release(borizAddress);
+
+      const borizBalanceAfterInWei = await web3.eth.getBalance(borizAddress);
+      const borizBalanceAfterEth = Number(web3.utils.fromWei(borizBalanceAfterInWei, 'ether'));
+
+      const neededValue = borizBalanceBeforeEth + goal;
+      assert.equal(borizBalanceAfterEth, neededValue);
+    }); 
   });
 });
