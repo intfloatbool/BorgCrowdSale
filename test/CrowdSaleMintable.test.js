@@ -8,7 +8,7 @@ const WalletSplitter = artifacts.require('WalletSplitter');
 // 'inverstor 1/2' - accounts of investors
 contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
   //console.log(`Contract args: \n ${_} \n ${wallet} \n ${investor1} ${investor2}`);
-  beforeEach(async function() {
+  before(async function() {
 
     //accounts
     this.accounts = await web3.eth.getAccounts();
@@ -56,26 +56,24 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
       this.ownersShares
     );
 
+    //Check address of walletSplitter
+    const walletSplitterAddress = await this.walletSplitter.address;
+    console.log(`WalletSplitter contract address: \n ${walletSplitterAddress}`);
+
     // Crowdsale config
     this.rate = 1;
-    this.wallet = wallet;
+    this.wallet = walletSplitterAddress; //add payments to splitter wallet!
 
     this.crowdsale = await BorgTokenCrowdsale.new(
       this.rate,
-      this.wallet,
+      this.wallet, 
       this.token.address
     );
 
     //Show minters
-    const isAcc1Minter = await this.token.isMinter(_); //true < acc1 is minter !!
-    const isInvestor1Minter = await this.token.isMinter(investor1); //false
-    const isInvestor2Minter = await this.token.isMinter(investor2); //false
-    const minters = [
-      isAcc1Minter,
-      isInvestor1Minter,
-      isInvestor2Minter
-    ]
-    //console.log(`Coin minters? : \n ${minters}`);
+    //const isAcc1Minter = await this.token.isMinter(_); //true < acc1 is minter !!
+    //const isInvestor1Minter = await this.token.isMinter(investor1); //false
+    //const isInvestor2Minter = await this.token.isMinter(investor2); //false
     
     //ADD crowdsale contract as minter to Token!:
     await this.token.addMinter(this.crowdsale.address);
