@@ -115,6 +115,12 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
   });
 
   describe('tokens sale tests', function() {
+
+    //helper func
+    function calculateDoleByOwner(owner) {
+      return owner.shares / 100;
+    }
+
     const countOfBuy = 10;
     it('balance of investor should be updated ', async function() {
       const weiToBuy = web3.utils.toWei(countOfBuy.toString());
@@ -126,7 +132,7 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
 
     it(`Boriz should get hes dole`, async function() {
       const borizAddress = this.moneyOwners.BORIZ.acc;
-      const dolePercent = this.moneyOwners.BORIZ.shares / 100;
+      const dolePercent = calculateDoleByOwner(this.moneyOwners.BORIZ);
       let goal = countOfBuy * dolePercent;
       const borizBalanceBeforeInWei = await web3.eth.getBalance(borizAddress);
       const borizBalanceBeforeEth = Number(web3.utils.fromWei(borizBalanceBeforeInWei, 'ether'));
@@ -139,6 +145,24 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
 
       const neededValue = borizBalanceBeforeEth + goal;
       assert.equal(borizBalanceAfterEth, neededValue);
+    });
+    
+    it('Micha should get hes dole', async function() {
+      const michaAddress = this.moneyOwners.MICHA.acc;
+      const dolePercent = calculateDoleByOwner(this.moneyOwners.MICHA);
+      let goal = countOfBuy * dolePercent;
+
+      const michaBalanceBeforeInWei = await web3.eth.getBalance(michaAddress);
+      const michaBalanceBeforeEth = Number(web3.utils.fromWei(michaBalanceBeforeInWei, 'ether'));
+
+      //get dole
+      await this.walletSplitter.release(michaAddress);
+
+      const michaBalanceAfterInWei = await web3.eth.getBalance(michaAddress);
+      const michaBalanceAfterEth = Number(web3.utils.fromWei(michaBalanceAfterInWei, 'ether'));
+
+      const neededValue = michaBalanceBeforeEth + goal;
+      assert.equal(michaBalanceAfterEth, neededValue); 
     }); 
   });
 });
