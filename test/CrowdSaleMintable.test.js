@@ -1,14 +1,31 @@
 const ether = require('./helpers/ether');
 const BorgToken = artifacts.require('BorgTokenMintable');
 const BorgTokenCrowdsale = artifacts.require('BorgTokensCrowdsale');
-
+const WalletSplitter = artifacts.require('WalletSplitter');
 //@ Args
 // '_' - creator account
 // 'wallet' - wallet for crowdsale
 // 'inverstor 1/2' - accounts of investors
 contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
-  console.log(`Contract args: \n ${_} \n ${wallet} \n ${investor1} ${investor2}`);
-  beforeEach(async function () {
+  //console.log(`Contract args: \n ${_} \n ${wallet} \n ${investor1} ${investor2}`);
+  beforeEach(async function() {
+
+    //accounts
+    this.accounts = await web3.eth.getAccounts();
+    this.moneyOwners = {
+      BORIZ: {
+        acc: this.accounts[4],
+        shares: 60
+      },
+      MICHA: {
+        acc: this.accounts[5],
+        shares: 30
+      },
+      VOVA: {
+        acc: this.accounts[6],
+        shares: 10
+      }
+    }
 
     // Token config
     this.name = "Borg";
@@ -20,6 +37,11 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
       this.symbol,
       this.decimals
     );
+    
+    //Initialize wallet splitter to split payments between owners
+    this.walletOwners = [
+
+    ];
 
     // Crowdsale config
     this.rate = 1;
@@ -71,11 +93,7 @@ contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
 
       await this.crowdsale.buyTokens(investor1, {value: weiToBuy});
       const balanceAfter = await this.token.balanceOf(investor1);
-      const balanceAfterStr = web3.utils.fromWei(balanceAfter);
-      const neededBalanceStr = web3.utils.fromWei(balanceAfter);
-      console.log(`Balances: \n required: ${neededBalanceStr} \n after: ${balanceAfterStr}`);
       assert.equal(weiToBuy, balanceAfter);
-      //console.log(`Balance before : ${balanceBefore}`);
     });
   });
 });
