@@ -6,5 +6,7 @@ contract WalletSplitter is PaymentSplitter {
     constructor(address[] memory payees, uint256[] memory shares) PaymentSplitter(payees, shares) public {
         //payees - кошельки между которыми делятся деньги
         //payees - доли каждого кошелька (например у одного 10% у другого 90%)
+
+        //чтобы получить свою долю, один из участников кошелька должен вызывать функцию release(твой адрес)
     }
 }
