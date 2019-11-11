@@ -9,7 +9,6 @@ const WalletSplitter = artifacts.require('WalletSplitter');
 contract('TokenCrowd sale', function([_, wallet, investor1, investor2]) {
   //console.log(`Contract args: \n ${_} \n ${wallet} \n ${investor1} ${investor2}`);
   before(async function() {
-
     //accounts
     this.accounts = await web3.eth.getAccounts();
     this.moneyOwners = {
