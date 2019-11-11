@@ -14,5 +14,5 @@ contract WalletSplitter is PaymentSplitter, SignerRole {
         for (uint256 i = 0; i < payees.length; i++) {
             _addSigner(payees[i]);
         }
-    }
+    }   
 }
