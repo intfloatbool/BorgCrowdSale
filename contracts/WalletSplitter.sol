@@ -4,6 +4,11 @@ import "@openzeppelin/contracts/payment/PaymentSplitter.sol";
 import "@openzeppelin/contracts/access/roles/SignerRole.sol";
 
 contract WalletSplitter is PaymentSplitter, SignerRole {
+    struct Transaction {
+        address destination;
+        uint value;
+        bool executed;
+    }
     constructor(address[] memory payees, uint256[] memory shares) PaymentSplitter(payees, shares) public {
         //payees - кошельки между которыми делятся деньги
         //payees - доли каждого кошелька (например у одного 10% у другого 90%)
