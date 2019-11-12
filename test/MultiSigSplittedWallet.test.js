@@ -60,5 +60,11 @@ contract('MultiSigSplittedWallet contract', () => {
             assert.equal(shares, shareNumber);
           }
         });
+
+        it("Required count should be equal to owners count", async () => {
+          const requirementsCount = await multiSigWallet.required();
+          const num = Number(requirementsCount);
+          assert.equal(ownerAccounts.length, num);
+        });
     });
 });
