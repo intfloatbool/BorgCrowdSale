@@ -83,5 +83,29 @@ contract('MultiSigSplittedWallet contract', () => {
           const numNeededBalance = Number(neededBalanceWei);
           assert.equal(numBalance, numNeededBalance);
         });
+
+        it("Should have zero transactions before", async () => {
+          const currentTransactions = await multiSigWallet.transactionCount();
+          assert.equal(Number(currentTransactions), 0);
+        });
+    });
+
+    describe("Signed wallet functions testing", () => {
+      it('Should increase transaction count', async () => {
+        await multiSigWallet.submitTransaction(moneyOwners.BORIZ.acc, {from: moneyOwners.BORIZ.acc});
+        const currentTransactions = await multiSigWallet.transactionCount();
+        assert.equal(Number(currentTransactions), 1);
+      });
+      it('Should have new transaction', async () => {  
+        const transaction = await multiSigWallet.transactions(0);
+        assert.equal(transaction.destination, moneyOwners.BORIZ.acc);
+        assert.equal(transaction.executed, false);
+      });
+      it('Should not increase balance', async () => {
+        const basicBorizBalance = 100; //100 is basic
+        const borizWeiBalanceNowWei = await web3.eth.getBalance(moneyOwners.BORIZ.acc);
+        const borizBalananceAfterEth = web3.utils.fromWei(borizWeiBalanceNowWei);
+        assert.equal(borizBalananceAfterEth > basicBorizBalance, false);
+      });
     });
 });
