@@ -35,20 +35,20 @@ contract('MultiSigSplittedWallet contract', () => {
         ownerAccounts.push(moneyOwners.BORIZ.acc);
         ownerAccounts.push(moneyOwners.MICHA.acc);
         ownerAccounts.push(moneyOwners.VOVA.acc);
-
+        
         multiSigWallet = await MultiSigSplittedWallet.new(
             ownerAccounts,
-            moneyShares
+            moneyShares,
         );
     });
 
     describe("Wallet fields test", () => {
-        it("Should each user as signer", async () => {
-            for(let i = 0; i < ownerAccounts.length; i++) {
-              const acc = ownerAccounts[i];
-              const isSigner = await multiSigWallet.isSigner(acc);
-              assert.equal(isSigner, true);
-            }
+        it("Each user in contract is signer", async () => {
+          for(let i = 0; i < ownerAccounts.length; i++) {
+            const address = ownerAccounts[i];
+            const isSigner = await multiSigWallet.isSigner(address);
+            assert.equal(isSigner, true);
+          }
         });
     });
 });
