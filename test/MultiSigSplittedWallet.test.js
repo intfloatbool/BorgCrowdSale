@@ -24,13 +24,16 @@ const moneyShares = [
 const ownerAccounts = [];
 
 let multiSigWallet = null;
-
+let potentialInvestorAddr = null;
+const amountOfEther = 50;
 contract('MultiSigSplittedWallet contract', () => {
     before(async () => {
         const accounts = await web3.eth.getAccounts();
         moneyOwners.BORIZ.acc = accounts[4];
         moneyOwners.MICHA.acc = accounts[5];
         moneyOwners.VOVA.acc = accounts[6];
+
+        potentialInvestorAddr = accounts[7];
 
         ownerAccounts.push(moneyOwners.BORIZ.acc);
         ownerAccounts.push(moneyOwners.MICHA.acc);
@@ -40,6 +43,11 @@ contract('MultiSigSplittedWallet contract', () => {
             ownerAccounts,
             moneyShares,
         );
+
+        //send 50 ether to wallet for test    
+        const bnAmount = web3.utils.toBN(amountOfEther);
+        const amoutInWEI = web3.utils.toWei(bnAmount, 'ether');
+        await web3.eth.sendTransaction({from:potentialInvestorAddr,to:multiSigWallet.address, value:amoutInWEI});
     });
 
     describe("Wallet fields test", () => {
@@ -65,6 +73,15 @@ contract('MultiSigSplittedWallet contract', () => {
           const requirementsCount = await multiSigWallet.required();
           const num = Number(requirementsCount);
           assert.equal(ownerAccounts.length, num);
+        });
+
+        it("Start balance should be initialized", async () => {
+          const neededBalance = web3.utils.toBN(amountOfEther);
+          const neededBalanceWei = web3.utils.toWei(neededBalance, 'ether');
+          const balanceOfWallet = await multiSigWallet.getBalance();
+          const numBalance = Number(balanceOfWallet);
+          const numNeededBalance = Number(neededBalanceWei);
+          assert.equal(numBalance, numNeededBalance);
         });
     });
 });

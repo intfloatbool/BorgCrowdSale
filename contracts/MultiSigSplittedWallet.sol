@@ -120,6 +120,11 @@ contract MultiSigSplittedWallet is  PaymentSplitterChanged, SignerRole {
         }
     }
 
+
+    function getBalance() public view returns(uint256) {
+        return address(this).balance;
+    }
+
     // *** MODIFERS ***
     modifier transactionExists(uint transactionId) {
         require(transactions[transactionId].destination != address(0), "Transaction not exists!");
