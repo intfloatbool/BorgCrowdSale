@@ -25,7 +25,7 @@ const ownerAccounts = [];
 
 let multiSigWallet = null;
 
-contract('MultiSigSplittedWallet', () => {
+contract('MultiSigSplittedWallet contract', () => {
     before(async () => {
         const accounts = await web3.eth.getAccounts();
         moneyOwners.BORIZ.acc = accounts[4];
@@ -36,7 +36,7 @@ contract('MultiSigSplittedWallet', () => {
         ownerAccounts.push(moneyOwners.MICHA.acc);
         ownerAccounts.push(moneyOwners.VOVA.acc);
 
-        multiSigWallet = MultiSigSplittedWallet.new(
+        multiSigWallet = await MultiSigSplittedWallet.new(
             ownerAccounts,
             moneyShares
         );
@@ -47,7 +47,7 @@ contract('MultiSigSplittedWallet', () => {
             for(let i = 0; i < ownerAccounts.length; i++) {
               const acc = ownerAccounts[i];
               const isSigner = await multiSigWallet.isSigner(acc);
-              asssert.equal(isSigner, true);
+              assert.equal(isSigner, true);
             }
         });
     });
