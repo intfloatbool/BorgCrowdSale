@@ -35,7 +35,7 @@ contract('MultiSigSplittedWallet contract', () => {
         ownerAccounts.push(moneyOwners.BORIZ.acc);
         ownerAccounts.push(moneyOwners.MICHA.acc);
         ownerAccounts.push(moneyOwners.VOVA.acc);
-        
+
         multiSigWallet = await MultiSigSplittedWallet.new(
             ownerAccounts,
             moneyShares,
@@ -48,6 +48,16 @@ contract('MultiSigSplittedWallet contract', () => {
             const address = ownerAccounts[i];
             const isSigner = await multiSigWallet.isSigner(address);
             assert.equal(isSigner, true);
+          }
+        });
+
+        it("Owners should have correct doles", async () => {
+          for(let [key, value] of Object.entries(moneyOwners)) {
+            const owner = moneyOwners[key];
+            const shares = owner.shares;
+            const shareByContract = await multiSigWallet.shares(owner.acc);
+            const shareNumber = Number(shareByContract);
+            assert.equal(shares, shareNumber);
           }
         });
     });
