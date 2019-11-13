@@ -16,14 +16,13 @@ contract MultiSigSplittedWallet is  PaymentSplitterChanged, SignerRole {
     mapping (uint => Transaction) public transactions;
     mapping (uint => mapping (address => bool)) public confirmations;
 
-    //Этот контракт не принимает кол-во нужных подтверждений, оно равно размеру владельцев!
-    constructor(address[] memory payees, uint256[] memory shares) PaymentSplitterChanged(payees, shares) public {
+    constructor(address[] memory payees, uint256[] memory shares, uint _required) PaymentSplitterChanged(payees, shares) public {
         //добавление сигнер роли всем участникам
         for (uint256 i = 0; i < payees.length; i++) {
             _addSigner(payees[i]);
         }
 
-        required = _payees.length;
+        required = _required;
     }
 
     function release(address payable account) internal {

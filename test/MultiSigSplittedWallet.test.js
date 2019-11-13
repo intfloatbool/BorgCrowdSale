@@ -23,6 +23,8 @@ const moneyShares = [
 
 const ownerAccounts = [];
 
+const requiredCOunt = 2;
+
 let multiSigWallet = null;
 let potentialInvestorAddr = null;
 const amountOfEther = 50;
@@ -37,11 +39,11 @@ contract('MultiSigSplittedWallet contract', () => {
 
         ownerAccounts.push(moneyOwners.BORIZ.acc);
         ownerAccounts.push(moneyOwners.MICHA.acc);
-        ownerAccounts.push(moneyOwners.VOVA.acc);
-
+        ownerAccounts.push(moneyOwners.VOVA.acc);   
         multiSigWallet = await MultiSigSplittedWallet.new(
             ownerAccounts,
             moneyShares,
+            requiredCOunt
         );
 
         //send 50 ether to wallet for test    
@@ -72,7 +74,7 @@ contract('MultiSigSplittedWallet contract', () => {
         it("Required count should be equal to owners count", async () => {
           const requirementsCount = await multiSigWallet.required();
           const num = Number(requirementsCount);
-          assert.equal(ownerAccounts.length, num);
+          assert.equal(requiredCOunt, num);
         });
 
         it("Start balance should be initialized", async () => {
@@ -120,15 +122,17 @@ contract('MultiSigSplittedWallet contract', () => {
 
       it('Should confirms', async () => {
         try {
+
+          //Depends of confirm count!
           await multiSigWallet.confirmTransaction(0, {from: moneyOwners.MICHA.acc});
-          await multiSigWallet.confirmTransaction(0, {from: moneyOwners.VOVA.acc});
+          //await multiSigWallet.confirmTransaction(0, {from: moneyOwners.VOVA.acc});
 
           const borizConfirm = await multiSigWallet.confirmations(0,moneyOwners.BORIZ.acc);
-          const vovaConfirm = await multiSigWallet.confirmations(0,moneyOwners.VOVA.acc);
           const michaConfirm = await multiSigWallet.confirmations(0,moneyOwners.MICHA.acc);
-          
+          //const vovaConfirm = await multiSigWallet.confirmations(0,moneyOwners.VOVA.acc);    
+             
+          //assert.equal(vovaConfirm, true);
           assert.equal(borizConfirm, true);
-          assert.equal(vovaConfirm, true);
           assert.equal(michaConfirm, true);
         } catch(err) {
           assert.ok(false, err.message);   
