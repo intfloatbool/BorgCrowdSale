@@ -105,7 +105,43 @@ contract('MultiSigSplittedWallet contract', () => {
         const basicBorizBalance = 100; //100 is basic
         const borizWeiBalanceNowWei = await web3.eth.getBalance(moneyOwners.BORIZ.acc);
         const borizBalananceAfterEth = web3.utils.fromWei(borizWeiBalanceNowWei);
+        console.log(`Boriz balance before confirm: ${borizBalananceAfterEth} ETH`);
         assert.equal(borizBalananceAfterEth > basicBorizBalance, false);
       });
+
+      it('Should not executed before confirms', async () => {
+        try {
+          await multiSigWallet.executeTransaction(0, {from: moneyOwners.BORIZ.acc});
+          assert.ok(false);     
+        } catch(err) {
+          assert.ok(true, err.message);   
+        }
+      });
+
+      it('Should confirms', async () => {
+        try {
+          await multiSigWallet.confirmTransaction(0, {from: moneyOwners.MICHA.acc});
+          await multiSigWallet.confirmTransaction(0, {from: moneyOwners.VOVA.acc});
+
+          const borizConfirm = await multiSigWallet.confirmations(0,moneyOwners.BORIZ.acc);
+          const vovaConfirm = await multiSigWallet.confirmations(0,moneyOwners.VOVA.acc);
+          const michaConfirm = await multiSigWallet.confirmations(0,moneyOwners.MICHA.acc);
+          
+          assert.equal(borizConfirm, true);
+          assert.equal(vovaConfirm, true);
+          assert.equal(michaConfirm, true);
+        } catch(err) {
+          assert.ok(false, err.message);   
+        }
+      });
+
+      it('Should boost boris balance after confirm', async () => {
+        const basicBorizBalance = 100; //100 is basic
+        const borizWeiBalanceNowWei = await web3.eth.getBalance(moneyOwners.BORIZ.acc);
+        const borizBalananceAfterEth = web3.utils.fromWei(borizWeiBalanceNowWei);
+        console.log(`Boriz balance after confirm: ${borizBalananceAfterEth} ETH`);
+        assert.equal(borizBalananceAfterEth > basicBorizBalance, true);
+      });
+
     });
 });
