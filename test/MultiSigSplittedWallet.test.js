@@ -124,18 +124,18 @@ contract('MultiSigSplittedWallet contract', () => {
         try {
 
           //Depends of confirm count!
-          await multiSigWallet.confirmTransaction(0, {from: moneyOwners.MICHA.acc});
-          //await multiSigWallet.confirmTransaction(0, {from: moneyOwners.VOVA.acc});
+          //await multiSigWallet.confirmTransaction(0, {from: moneyOwners.MICHA.acc});
+          await multiSigWallet.confirmTransaction(0, {from: moneyOwners.VOVA.acc});
 
           const borizConfirm = await multiSigWallet.confirmations(0,moneyOwners.BORIZ.acc);
-          const michaConfirm = await multiSigWallet.confirmations(0,moneyOwners.MICHA.acc);
-          //const vovaConfirm = await multiSigWallet.confirmations(0,moneyOwners.VOVA.acc);    
+          //const michaConfirm = await multiSigWallet.confirmations(0,moneyOwners.MICHA.acc);
+          const vovaConfirm = await multiSigWallet.confirmations(0,moneyOwners.VOVA.acc);    
              
-          //assert.equal(vovaConfirm, true);
+          assert.equal(vovaConfirm, true);
           assert.equal(borizConfirm, true);
-          assert.equal(michaConfirm, true);
+          //assert.equal(michaConfirm, true);
         } catch(err) {
-          assert.ok(false, err.message);   
+          assert.ok(false, "Cannot confirm transactions! \n" + err.message);   
         }
       });
 
